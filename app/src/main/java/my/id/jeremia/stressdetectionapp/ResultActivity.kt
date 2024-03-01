@@ -9,12 +9,16 @@ class ResultActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_result)
 
-        val answerQ1 = intent.getStringExtra("answerQ1")
-        val answerQ2 = intent.getStringExtra("answerQ2")
-        val answerQ3 = intent.getStringExtra("answerQ3")
+        val username = intent.getStringExtra("username")
+        val programstudi = intent.getStringExtra("programstudi")
+        val answers = intent.getIntArrayExtra("answers")
+        val score = intent.getDoubleExtra("score",0.0)
+
+        findViewById<TextView>(R.id.resultUsername).text = username
+        findViewById<TextView>(R.id.resultProdi).text = programstudi
 
         findViewById<TextView>(R.id.resultText).text =
-            "Q1 : ${answerQ1}\nQ2 : ${answerQ2}\nQ3 : ${answerQ3}"
+            " ${score}"
 
     }
 }
