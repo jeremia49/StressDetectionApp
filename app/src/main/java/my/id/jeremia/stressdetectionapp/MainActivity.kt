@@ -58,7 +58,7 @@ class MainActivity : AppCompatActivity() {
 
         val startBtn = findViewById<Button>(R.id.mainStartBtn)
         startBtn.setOnClickListener {
-            startActivity(Intent(this, QuestionActivity::class.java).apply {
+            startActivity(Intent(this, SetupCamera::class.java).apply {
                 this.putExtra("username", username.text.toString())
                 this.putExtra("programstudi", programstudi.text.toString())
             })
