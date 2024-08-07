@@ -19,7 +19,7 @@ import java.util.Objects
 
 
 class QuestionActivity : AppCompatActivity() {
-    lateinit var ANSWERS : IntArray;
+    lateinit var ANSWERS : FloatArray;
     val PERTANYAAAN : LinkedHashMap<String, Double> = linkedMapOf(
         "Sering Lupa/Pelupa" to 0.80,
         "Sulit Berkonsentrasi/Tidak Fokus" to 0.80,
@@ -58,8 +58,8 @@ class QuestionActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_question)
 
-        ANSWERS = IntArray(PERTANYAAAN.size).apply{
-            fill(-1,0)
+        ANSWERS = FloatArray(PERTANYAAAN.size).apply{
+            fill(-1f,0)
         }
 
         val username = intent.getStringExtra("username")
@@ -80,23 +80,43 @@ class QuestionActivity : AppCompatActivity() {
         findViewById<Button>(R.id.submitAnswer).setOnClickListener{
 
             var score = 0.0;
-            for (i in 0..PERTANYAAAN.size-1) {
-                if(ANSWERS[i] == -1){
+            for (i in 0..<PERTANYAAAN.size) {
+                if(ANSWERS[i] == -1f){
                     Toast.makeText(baseContext,"Anda belum menjawab pertanyaan ${PERTANYAAAN.keys.elementAt(i)}",Toast.LENGTH_LONG).show()
                     return@setOnClickListener
                 }
-                else if(ANSWERS[i] == 1 ){
-                    score += PERTANYAAAN.values.elementAt(i)
-                }
+            }
+
+            val cf1 = PERTANYAAAN.values.elementAt(0);
+            val ans1 = ANSWERS[0];
+            val r1 = cf1 * ans1;
+
+            val cf2 =  PERTANYAAAN.values.elementAt(1);
+            val ans2 = ANSWERS[1];
+            val r2 = cf2 * ans2;
+
+
+            var oldcf = r1 + r2 * (1-r1)
+
+
+            for (i in 2..<PERTANYAAAN.size){
+                val cf = PERTANYAAAN.values.elementAt(i);
+                val ans = ANSWERS[i];
+
+//                if(ans == -1f){
+//                    continue;
+//                }
+
+                val r = cf * ans;
+
+                oldcf += r * (1 - oldcf)
             }
 
             startActivity(Intent(this, ResultActivity::class.java).apply {
-
                 this.putExtra("answers", ANSWERS)
                 this.putExtra("username", username)
                 this.putExtra("programstudi", programstudi)
-                this.putExtra("score", score)
-
+                this.putExtra("score", oldcf)
             })
         }
 
@@ -113,21 +133,28 @@ class QuestionActivity : AppCompatActivity() {
                 chipGroup: ChipGroup, ints: MutableList<Int> ->
 
 //                Log.d("LOG", "ANSWER ${ANSWERS.contentToString()}")
+//                    v.findViewById<TextView>(R.id.txtScr).text = "TIDAK"
 
                 val chipid = chipGroup.checkedChipId
                 if(chipid == View.NO_ID){
-                    ANSWERS[idx] = -1
-//                    v.findViewById<TextView>(R.id.txtScr).text = "NULL"
+                    ANSWERS[idx] = -1f
                     return@setOnCheckedStateChangeListener
                 }
                 val chip: Chip = chipGroup.findViewById(chipid)
-                if(chip.text.toString().contentEquals("Ya")) {
-                    ANSWERS[idx] = 1
-//                    v.findViewById<TextView>(R.id.txtScr).text = "YA"
+                if(chip.text.toString().contentEquals("Tidak Pernah")) {
+                    ANSWERS[idx] = 0f
                     return@setOnCheckedStateChangeListener
-                }else if(chip.text.toString().contentEquals("Tidak")) {
-                    ANSWERS[idx] = 0
-//                    v.findViewById<TextView>(R.id.txtScr).text = "TIDAK"
+                }else if(chip.text.toString().contentEquals("Jarang")) {
+                    ANSWERS[idx] = 0.25f
+                    return@setOnCheckedStateChangeListener
+                }else if(chip.text.toString().contentEquals("Kadang-Kadang")) {
+                    ANSWERS[idx] = 0.5f
+                    return@setOnCheckedStateChangeListener
+                }else if(chip.text.toString().contentEquals("Sering")) {
+                    ANSWERS[idx] = 0.75f
+                    return@setOnCheckedStateChangeListener
+                }else if(chip.text.toString().contentEquals("Selalu")) {
+                    ANSWERS[idx] = 1f
                     return@setOnCheckedStateChangeListener
                 }
             return@setOnCheckedStateChangeListener
