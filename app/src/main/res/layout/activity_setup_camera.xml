@@ -40,6 +40,7 @@
         />
 
     <Button
+        android:enabled="false"
         android:id="@+id/nextButton"
         android:layout_width="150dp"
         android:layout_height="50dp"

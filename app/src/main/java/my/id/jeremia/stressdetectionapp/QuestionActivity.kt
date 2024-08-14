@@ -14,11 +14,20 @@ import androidx.appcompat.app.AppCompatActivity
 import com.google.android.material.chip.Chip
 import com.google.android.material.chip.ChipGroup
 import com.google.android.material.snackbar.Snackbar
+import com.google.firebase.database.DataSnapshot
+import com.google.firebase.database.DatabaseError
+import com.google.firebase.database.DatabaseReference
+import com.google.firebase.database.FirebaseDatabase
+import com.google.firebase.database.ValueEventListener
+import com.google.firebase.database.getValue
 import org.w3c.dom.Text
 import java.util.Objects
 
 
 class QuestionActivity : AppCompatActivity() {
+
+    val databaseReference : DatabaseReference = FirebaseDatabase.getInstance().getReference("penelitian")
+
     lateinit var ANSWERS : FloatArray;
     val PERTANYAAAN : LinkedHashMap<String, Double> = linkedMapOf(
         "Sering Lupa/Pelupa" to 0.80,
@@ -66,7 +75,23 @@ class QuestionActivity : AppCompatActivity() {
         val programstudi = intent.getStringExtra("programstudi")
 
         val questionHeaderText = findViewById<TextView>(R.id.questionHeaderText)
-        questionHeaderText.text = "Nama : ${username}\nProgram Studi : ${programstudi}"
+        questionHeaderText.text = "Nama : ${username}\nProgram Studi : ${programstudi}\nBPM:-\nHumidity:-\nTemperature:-\nMic:-"
+
+
+        databaseReference.addValueEventListener(object:ValueEventListener{
+            override fun onDataChange(snapshot: DataSnapshot) {
+                val bpm = snapshot.child("bpm").getValue<Int>()
+                val humidity = snapshot.child("humidity").getValue<Int>()
+                val temperature = snapshot.child("temperature").getValue<Int>()
+                val mic = snapshot.child("microphone").getValue<Boolean>()
+                questionHeaderText.text = "Nama : ${username}\nProgram Studi : ${programstudi}\nBPM:${bpm}\nHumidity:${humidity}\nTemperature:${temperature}\nMic:${mic}"
+            }
+
+            override fun onCancelled(error: DatabaseError) {
+                Log.e("LOG", error.message)
+            }
+
+        })
 
         for (i in 0..PERTANYAAAN.size-1) {
             val z = createItemPertanyaan(PERTANYAAAN.keys.elementAt(i), i)

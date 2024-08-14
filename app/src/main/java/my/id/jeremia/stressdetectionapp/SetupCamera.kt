@@ -93,15 +93,17 @@ class SetupCamera : AppCompatActivity() {
 
                         faceDetector.process(inputimage)
                             .addOnSuccessListener { faces ->
-
+                                var faceDetected = false
                                 for (face in faces) {
+                                    faceDetected = true
                                     // If classification was enabled:
                                     if (face.smilingProbability != null) {
                                         val smileProb = face.smilingProbability
-
                                         viewBinding.smileProbTextView.text = "Kemungkinan Senyum : ${smileProb}"
                                     }
                                 }
+
+                                viewBinding.nextButton.isEnabled = faceDetected
 
                                 img.close()
                             }
