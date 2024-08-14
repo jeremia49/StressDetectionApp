@@ -7,6 +7,7 @@ import android.os.Bundle
 import android.util.Log
 import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.activity.viewModels
 import androidx.annotation.OptIn
 import androidx.appcompat.app.AppCompatActivity
 import androidx.camera.core.CameraSelector
@@ -16,14 +17,18 @@ import androidx.camera.core.ImageCapture
 import androidx.camera.core.Preview
 import androidx.camera.lifecycle.ProcessCameraProvider
 import androidx.core.content.ContextCompat
+import androidx.lifecycle.ViewModelProvider
 import com.google.mlkit.vision.common.InputImage
 import com.google.mlkit.vision.face.FaceDetection
 import com.google.mlkit.vision.face.FaceDetectorOptions
+import dagger.hilt.EntryPoint
+import dagger.hilt.android.AndroidEntryPoint
 import my.id.jeremia.stressdetectionapp.Analyzer.FaceAnalyzer
 import my.id.jeremia.stressdetectionapp.databinding.ActivitySetupCameraBinding
 import java.util.concurrent.ExecutorService
 import java.util.concurrent.Executors
 
+@AndroidEntryPoint
 class SetupCamera : AppCompatActivity() {
     private lateinit var viewBinding: ActivitySetupCameraBinding
 
@@ -31,10 +36,15 @@ class SetupCamera : AppCompatActivity() {
 
     private lateinit var cameraExecutor: ExecutorService
 
+    private val setupCameraViewModel : SetupCameraViewModel by viewModels()
+
+    private lateinit var SESSIONID:String
+
     override fun onCreate(savedInstanceState: Bundle?) {
 
         val username = intent.getStringExtra("username")
         val programstudi = intent.getStringExtra("programstudi")
+        SESSIONID = intent.getStringExtra("sessionID") ?: ""
 
         super.onCreate(savedInstanceState)
         viewBinding = ActivitySetupCameraBinding.inflate(layoutInflater)
@@ -51,6 +61,7 @@ class SetupCamera : AppCompatActivity() {
             startActivity(Intent(this, QuestionActivity::class.java).apply {
                 this.putExtra("username", username)
                 this.putExtra("programstudi", programstudi)
+                this.putExtra("sessionID", SESSIONID)
             })
         }
 
@@ -100,10 +111,13 @@ class SetupCamera : AppCompatActivity() {
                                     if (face.smilingProbability != null) {
                                         val smileProb = face.smilingProbability
                                         viewBinding.smileProbTextView.text = "Kemungkinan Senyum : ${smileProb}"
+                                        setupCameraViewModel.insertData(SESSIONID, (smileProb!! * 100 ).toInt())
                                     }
                                 }
 
+//                                viewBinding.nextButton.isEnabled = true
                                 viewBinding.nextButton.isEnabled = faceDetected
+
 
                                 img.close()
                             }

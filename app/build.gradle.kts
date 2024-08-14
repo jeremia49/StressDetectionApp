@@ -2,6 +2,10 @@ plugins {
     id("com.android.application")
     id("org.jetbrains.kotlin.android")
     id("com.google.gms.google-services")
+    id("com.google.dagger.hilt.android")
+    id("com.google.devtools.ksp")
+    id("kotlin-parcelize")
+
 }
 
 android {
@@ -43,6 +47,29 @@ android {
 }
 
 dependencies {
+
+
+    // Dependency Management
+    val hilt = "2.50"
+    implementation("com.google.dagger:hilt-android:$hilt")
+    ksp("com.google.dagger:hilt-android-compiler:$hilt")
+
+    val hiltKtx = "1.1.0"
+//    implementation("androidx.hilt:hilt-navigation-compose:$hiltKtx")
+//    implementation("androidx.hilt:hilt-work:$hiltKtx")
+    ksp("androidx.hilt:hilt-compiler:$hiltKtx")
+
+
+
+    implementation ("androidx.activity:activity-ktx:1.9.1")
+
+    implementation ("androidx.lifecycle:lifecycle-extensions:2.2.0")
+    implementation ("androidx.lifecycle:lifecycle-viewmodel-ktx:2.8.4")
+
+    implementation ("androidx.room:room-runtime:2.6.1")
+    ksp ("androidx.room:room-compiler:2.6.1")
+    implementation ("androidx.room:room-ktx:2.6.1")
+
     implementation(platform("com.google.firebase:firebase-bom:33.1.2"))
     implementation("com.google.firebase:firebase-database")
 

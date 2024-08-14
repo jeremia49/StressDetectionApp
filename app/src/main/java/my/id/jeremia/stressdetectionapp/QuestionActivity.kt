@@ -10,6 +10,7 @@ import android.view.ViewGroup
 import android.widget.Button
 import android.widget.TextView
 import android.widget.Toast
+import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import com.google.android.material.chip.Chip
 import com.google.android.material.chip.ChipGroup
@@ -20,13 +21,18 @@ import com.google.firebase.database.DatabaseReference
 import com.google.firebase.database.FirebaseDatabase
 import com.google.firebase.database.ValueEventListener
 import com.google.firebase.database.getValue
+import dagger.hilt.EntryPoint
+import dagger.hilt.android.AndroidEntryPoint
 import org.w3c.dom.Text
 import java.util.Objects
 
-
+@AndroidEntryPoint
 class QuestionActivity : AppCompatActivity() {
-
     val databaseReference : DatabaseReference = FirebaseDatabase.getInstance().getReference("penelitian")
+
+    private lateinit var SESSIONID:String
+
+    private val questionViewModel : QuestionViewModel by viewModels()
 
     lateinit var ANSWERS : FloatArray;
     val PERTANYAAAN : LinkedHashMap<String, Double> = linkedMapOf(
@@ -73,6 +79,7 @@ class QuestionActivity : AppCompatActivity() {
 
         val username = intent.getStringExtra("username")
         val programstudi = intent.getStringExtra("programstudi")
+        SESSIONID = intent.getStringExtra("sessionID") ?: ""
 
         val questionHeaderText = findViewById<TextView>(R.id.questionHeaderText)
         questionHeaderText.text = "Nama : ${username}\nProgram Studi : ${programstudi}\nBPM:-\nHumidity:-\nTemperature:-\nMic:-"
@@ -85,6 +92,11 @@ class QuestionActivity : AppCompatActivity() {
                 val temperature = snapshot.child("temperature").getValue<Int>()
                 val mic = snapshot.child("microphone").getValue<Boolean>()
                 questionHeaderText.text = "Nama : ${username}\nProgram Studi : ${programstudi}\nBPM:${bpm}\nHumidity:${humidity}\nTemperature:${temperature}\nMic:${mic}"
+
+                questionViewModel.insertData(SESSIONID,"bpm", bpm?:0)
+                questionViewModel.insertData(SESSIONID,"humidity", humidity?:0)
+                questionViewModel.insertData(SESSIONID,"temperature", temperature?:0)
+                questionViewModel.insertData(SESSIONID,"microphone", if(mic!!) 1 else 0)
             }
 
             override fun onCancelled(error: DatabaseError) {
@@ -105,12 +117,13 @@ class QuestionActivity : AppCompatActivity() {
         findViewById<Button>(R.id.submitAnswer).setOnClickListener{
 
             var score = 0.0;
-            for (i in 0..<PERTANYAAAN.size) {
-                if(ANSWERS[i] == -1f){
-                    Toast.makeText(baseContext,"Anda belum menjawab pertanyaan ${PERTANYAAAN.keys.elementAt(i)}",Toast.LENGTH_LONG).show()
-                    return@setOnClickListener
-                }
-            }
+
+//            for (i in 0..<PERTANYAAAN.size) {
+//                if(ANSWERS[i] == -1f){
+//                    Toast.makeText(baseContext,"Anda belum menjawab pertanyaan ${PERTANYAAAN.keys.elementAt(i)}",Toast.LENGTH_LONG).show()
+//                    return@setOnClickListener
+//                }
+//            }
 
             val cf1 = PERTANYAAAN.values.elementAt(0);
             val ans1 = ANSWERS[0];
@@ -142,6 +155,7 @@ class QuestionActivity : AppCompatActivity() {
                 this.putExtra("username", username)
                 this.putExtra("programstudi", programstudi)
                 this.putExtra("score", oldcf)
+                this.putExtra("sessionID", SESSIONID)
             })
         }
 

@@ -21,6 +21,13 @@ class MainActivity : AppCompatActivity() {
     var NUM_PAGES=0;
     val timer = Timer();
 
+    fun generateRandomString(length: Int): String {
+        val chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789"
+        return (1..length)
+            .map { chars.random() }
+            .joinToString("")
+    }
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
@@ -61,6 +68,7 @@ class MainActivity : AppCompatActivity() {
             startActivity(Intent(this, SetupCamera::class.java).apply {
                 this.putExtra("username", username.text.toString())
                 this.putExtra("programstudi", programstudi.text.toString())
+                this.putExtra("sessionID", generateRandomString(10))
             })
         }
 
