@@ -1,0 +1,30 @@
+{
+  "project_info": {
+    "project_number": "649440328957",
+    "firebase_url": "https://stressdetectionv2-babf8-default-rtdb.firebaseio.com",
+    "project_id": "stressdetectionv2-babf8",
+    "storage_bucket": "stressdetectionv2-babf8.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:649440328957:android:db1a8fdaf1ff9c39eb1294",
+        "android_client_info": {
+          "package_name": "my.id.jeremia.stressdetectionapp"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBx-OIf3O7uPN-K5F0D3F7s-LKyT1X39pc"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
