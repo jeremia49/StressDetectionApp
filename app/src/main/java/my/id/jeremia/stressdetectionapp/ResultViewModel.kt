@@ -1,12 +1,10 @@
 package my.id.jeremia.stressdetectionapp
 
-import android.util.Log
 import android.widget.TextView
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
-import my.id.jeremia.stressdetectionapp.database.AppDatabase
 import my.id.jeremia.stressdetectionapp.database.DatabaseService
 import my.id.jeremia.stressdetectionapp.database.entity.Sensor
 import javax.inject.Inject

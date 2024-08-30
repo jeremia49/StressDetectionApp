@@ -17,11 +17,9 @@ import androidx.camera.core.ImageCapture
 import androidx.camera.core.Preview
 import androidx.camera.lifecycle.ProcessCameraProvider
 import androidx.core.content.ContextCompat
-import androidx.lifecycle.ViewModelProvider
 import com.google.mlkit.vision.common.InputImage
 import com.google.mlkit.vision.face.FaceDetection
 import com.google.mlkit.vision.face.FaceDetectorOptions
-import dagger.hilt.EntryPoint
 import dagger.hilt.android.AndroidEntryPoint
 import my.id.jeremia.stressdetectionapp.Analyzer.FaceAnalyzer
 import my.id.jeremia.stressdetectionapp.databinding.ActivitySetupCameraBinding
