@@ -11,6 +11,10 @@ interface SensorDAO {
     @Insert
     suspend fun insert(sensor: Sensor)
 
+
+    @Query("SELECT * FROM sensors WHERE sesID = :sessionID AND tipesensor = :tipesensor")
+    suspend fun getBySessionAndSensors(sessionID:String, tipesensor:String): List<Sensor>
+
     @Query("SELECT * FROM sensors WHERE sesID = :sessionID")
     suspend fun getAllSensors(sessionID:String): List<Sensor>
 

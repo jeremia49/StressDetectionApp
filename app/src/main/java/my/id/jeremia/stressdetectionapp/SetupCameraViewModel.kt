@@ -20,7 +20,7 @@ class SetupCameraViewModel @Inject constructor(
 
     fun insertData(sessID:String, value:Int) {
         viewModelScope.launch {
-            databaseService.sensorDAO().insert(Sensor(sesID=sessID, tipesensor = "CAMERA", nilaisensor = value))
+            databaseService.sensorDAO().insert(Sensor(sesID=sessID, tipesensor = "camera", nilaisensor = value))
         }
     }
 

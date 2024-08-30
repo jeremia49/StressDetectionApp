@@ -29,12 +29,50 @@ class ResultViewModel @Inject constructor(
         return databaseService.sensorDAO().getAllSensors()
     }
 
-    fun getTextToPrint(v: TextView, sessID: String){
-        viewModelScope.launch{
-            val z = getData(sessID).joinToString(separator = "\n") {
-                it.id.toString() + it.tipesensor + it.nilaisensor
+    suspend fun getCameraData(sessID: String): List<Sensor>{
+        return databaseService.sensorDAO().getBySessionAndSensors(sessID, "camera")
+    }
+    suspend fun getBPMData(sessID: String): List<Sensor>{
+        return databaseService.sensorDAO().getBySessionAndSensors(sessID, "bpm")
+    }
+    suspend fun getHumidityData(sessID: String): List<Sensor>{
+        return databaseService.sensorDAO().getBySessionAndSensors(sessID, "humidity")
+    }
+    suspend fun getTemperatureData(sessID: String): List<Sensor>{
+        return databaseService.sensorDAO().getBySessionAndSensors(sessID, "temperature")
+    }
+    suspend fun getMicrophoneData(sessID: String): List<Sensor>{
+        return databaseService.sensorDAO().getBySessionAndSensors(sessID, "mic")
+    }
+
+    fun averageSensor(data:List<Sensor>) : Float{
+        var sum = 0
+        data.forEach{
+            sum += it.nilaisensor
+        }
+        return sum.toFloat()/data.size
+    }
+
+    fun checkMicrophone(data:List<Sensor>):Boolean{
+        var status = false
+        data.forEach{
+            if(it.nilaisensor == 1){
+                status = true
             }
-            v.text = z
+        }
+        return status
+    }
+
+    fun getTextToPrint(v: TextView, sessID: String){
+
+        viewModelScope.launch{
+            val camera = averageSensor(getCameraData(sessID))
+            val bpm = averageSensor(getBPMData(sessID))
+            val humidity = averageSensor(getHumidityData(sessID))
+            val temperature = averageSensor(getTemperatureData(sessID))
+            val mic = checkMicrophone(getMicrophoneData(sessID))
+
+            v.text = "Camera : ${camera}\nBPM : ${bpm}\nHumidity : ${humidity}\nTemperature : ${temperature}\nMic : ${mic}"
         }
     }
 
