@@ -22,11 +22,11 @@ class ResultActivity : AppCompatActivity() {
         val sessionID = intent.getStringExtra("sessionID") ?: ""
 
 
-        findViewById<TextView>(R.id.resultUsername).text = username
-        findViewById<TextView>(R.id.resultProdi).text = programstudi
+        findViewById<TextView>(R.id.resultUsername).text = "Nama : ${username}"
+        findViewById<TextView>(R.id.resultProdi).text = "Program Studi : ${programstudi}"
 
         findViewById<TextView>(R.id.resultText).text =
-            " ${score}"
+            "Hasil Dari Pertanyaan : ${score}"
 
 //        val getData = viewModelS
 
