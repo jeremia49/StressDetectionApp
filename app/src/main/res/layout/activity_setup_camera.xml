@@ -10,7 +10,7 @@
     <TextView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="Silahkan arahkan kamera depan ke wajah anda"
+        android:text="Silahkan arahkan kamera depan ke wajah anda dan bersenyum"
         app:layout_constraintBottom_toTopOf="@id/viewFinder"
         android:layout_marginBottom="10dp"
         android:padding="20dp"
