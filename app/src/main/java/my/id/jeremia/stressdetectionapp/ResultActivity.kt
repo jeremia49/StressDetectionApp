@@ -26,7 +26,7 @@ class ResultActivity : AppCompatActivity() {
         findViewById<TextView>(R.id.resultProdi).text = "Program Studi : ${programstudi}"
 
         findViewById<TextView>(R.id.resultText).text =
-            "Hasil Dari Pertanyaan : ${score}"
+            "Hasil Kuesioner : ${score}\n"
 
 //        val getData = viewModelS
 

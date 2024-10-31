@@ -47,7 +47,9 @@ android {
 }
 
 dependencies {
-
+    //Tensorflow
+    implementation ("org.tensorflow:tensorflow-lite:2.16.1")
+    implementation ("org.tensorflow:tensorflow-lite-support:0.4.4")
 
     // Dependency Management
     val hilt = "2.50"
@@ -72,9 +74,6 @@ dependencies {
 
     implementation(platform("com.google.firebase:firebase-bom:33.1.2"))
     implementation("com.google.firebase:firebase-database")
-
-
-    implementation("com.google.mlkit:face-detection:16.1.6")
 
     val camerax_version = "1.3.3"
     implementation ("androidx.camera:camera-core:${camerax_version}")

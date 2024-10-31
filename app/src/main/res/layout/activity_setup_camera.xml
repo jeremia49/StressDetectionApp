@@ -5,7 +5,9 @@
     android:id="@+id/main"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".SetupCamera">
+    tools:context=".SetupCamera"
+    android:background="#f3e5df"
+    >
 
     <TextView
         android:layout_width="match_parent"
@@ -32,23 +34,26 @@
         android:id="@+id/smileProbTextView"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="Kemungkinan Senyum : -"
+        android:text=""
         app:layout_constraintTop_toBottomOf="@id/viewFinder"
+        app:layout_constraintBottom_toTopOf="@id/nextButton"
         android:layout_marginTop="10dp"
         android:textSize="13sp"
         android:textAlignment="center"
         />
 
     <Button
-        android:enabled="false"
         android:id="@+id/nextButton"
         android:layout_width="150dp"
         android:layout_height="50dp"
-        android:text="Konfirmasi"
         android:layout_marginTop="20dp"
-        app:layout_constraintTop_toBottomOf="@id/smileProbTextView"
+        android:layout_marginBottom="20dp"
+        android:enabled="false"
+        android:text="Konfirmasi"
+        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent" />
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/smileProbTextView" />
 
 
 

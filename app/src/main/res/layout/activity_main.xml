@@ -4,7 +4,8 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".MainActivity">
+    tools:context=".MainActivity"
+    android:background="#f3e5df">
 
     <ImageView
         android:id="@+id/imageView"
@@ -20,8 +21,9 @@
         android:id="@+id/textView"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Aplikasi Deteksi Stress"
-        android:textSize="20sp"
+        android:text="Gen-Z Care"
+        android:textStyle="bold"
+        android:textSize="24sp"
         android:layout_marginTop="20dp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
@@ -42,8 +44,10 @@
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Masukkan nama anda :"
-            android:textSize="16sp" />
+            android:text="Nama :"
+            android:textSize="16sp"
+            android:textStyle="bold"
+            />
 
         <EditText
             android:layout_width="match_parent"
@@ -65,7 +69,8 @@
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Masukkan program studi anda :"
+            android:text="Program Studi:"
+            android:textStyle="bold"
             android:textSize="16sp" />
 
         <EditText

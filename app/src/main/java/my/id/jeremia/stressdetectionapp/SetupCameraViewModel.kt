@@ -6,11 +6,15 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
 import my.id.jeremia.stressdetectionapp.database.DatabaseService
 import my.id.jeremia.stressdetectionapp.database.entity.Sensor
+import my.id.jeremia.stressdetectionapp.repository.TensorflowRepository
 import javax.inject.Inject
 
 @HiltViewModel
 class SetupCameraViewModel @Inject constructor(
+
     private val databaseService: DatabaseService,
+    val tensorflowRepository: TensorflowRepository,
+
     ) : ViewModel() {
 
     init {

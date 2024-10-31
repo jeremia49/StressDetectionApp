@@ -17,12 +17,11 @@ import androidx.camera.core.ImageCapture
 import androidx.camera.core.Preview
 import androidx.camera.lifecycle.ProcessCameraProvider
 import androidx.core.content.ContextCompat
-import com.google.mlkit.vision.common.InputImage
-import com.google.mlkit.vision.face.FaceDetection
-import com.google.mlkit.vision.face.FaceDetectorOptions
 import dagger.hilt.android.AndroidEntryPoint
-import my.id.jeremia.stressdetectionapp.Analyzer.FaceAnalyzer
 import my.id.jeremia.stressdetectionapp.databinding.ActivitySetupCameraBinding
+import my.id.jeremia.stressdetectionapp.utils.camera.Analyzer
+import org.tensorflow.lite.DataType
+import org.tensorflow.lite.support.image.TensorImage
 import java.util.concurrent.ExecutorService
 import java.util.concurrent.Executors
 
@@ -34,9 +33,9 @@ class SetupCamera : AppCompatActivity() {
 
     private lateinit var cameraExecutor: ExecutorService
 
-    private val setupCameraViewModel : SetupCameraViewModel by viewModels()
+    private val setupCameraViewModel: SetupCameraViewModel by viewModels()
 
-    private lateinit var SESSIONID:String
+    private lateinit var SESSIONID: String
 
     override fun onCreate(savedInstanceState: Bundle?) {
 
@@ -77,58 +76,33 @@ class SetupCamera : AppCompatActivity() {
             val cameraProvider: ProcessCameraProvider = cameraProviderFuture.get()
 
             // Preview
-            val preview = Preview.Builder()
-                .build()
-                .also {
+            val preview = Preview.Builder().build().also {
                     it.setSurfaceProvider(viewBinding.viewFinder.surfaceProvider)
                 }
 
-
-            val faceDetectionOps = FaceDetectorOptions.Builder()
-                .setPerformanceMode(FaceDetectorOptions.PERFORMANCE_MODE_ACCURATE)
-                .setLandmarkMode(FaceDetectorOptions.LANDMARK_MODE_ALL)
-                .setClassificationMode(FaceDetectorOptions.CLASSIFICATION_MODE_ALL)
-                .build()
-
-            val faceDetector = FaceDetection.getClient(faceDetectionOps)
-
             val imageAnalyzer = ImageAnalysis.Builder()
-                .build()
-                .also {
-                    it.setAnalyzer(cameraExecutor, FaceAnalyzer {img->
-                        if(img.image == null) return@FaceAnalyzer
+                .setBackpressureStrategy(ImageAnalysis.STRATEGY_KEEP_ONLY_LATEST).build().also {
+                    it.setAnalyzer(cameraExecutor, Analyzer { img ->
 
-                        val inputimage = InputImage.fromMediaImage(img.image!!, img.imageInfo.rotationDegrees)
+                        val timage = TensorImage(DataType.FLOAT32)
+                        timage.load(img)
 
-                        faceDetector.process(inputimage)
-                            .addOnSuccessListener { faces ->
-                                var faceDetected = false
-                                for (face in faces) {
-                                    faceDetected = true
-                                    // If classification was enabled:
-                                    if (face.smilingProbability != null) {
-                                        val smileProb = face.smilingProbability
-                                        viewBinding.smileProbTextView.text = "Kemungkinan Senyum : ${smileProb}"
-                                        setupCameraViewModel.insertData(SESSIONID, (smileProb!! * 100 ).toInt())
-                                    }
-                                }
+                        val processedImage =
+                            setupCameraViewModel.tensorflowRepository.processImage(timage)
 
-//                                viewBinding.nextButton.isEnabled = true
-                                viewBinding.nextButton.isEnabled = faceDetected
+                        val output =
+                            setupCameraViewModel.tensorflowRepository.startInference(processedImage)
+                        Log.e("RESULT", output.contentDeepToString())
 
+                        runOnUiThread {
+                            viewBinding.nextButton.isEnabled = true
 
-                                img.close()
-                            }
-                            .addOnFailureListener {
-                                img.close()
-                                println(it.message)
+                            viewBinding.smileProbTextView.text =
+                                "Marah (${String.format("%.3f", output[0][0])}) "+
+                                "Senyum (${String.format("%.3f", output[0][1])}) "+
+                                "Sedih (${String.format("%.3f", output[0][3])})"
+                        }
 
-                                println(it.localizedMessage)
-                                println(it.cause)
-
-                                println(it.stackTrace)
-
-                            }
                     })
                 }
 
@@ -140,9 +114,10 @@ class SetupCamera : AppCompatActivity() {
 
                 // Bind use cases to camera
                 cameraProvider.bindToLifecycle(
-                    this, cameraSelector, preview, imageAnalyzer)
+                    this, cameraSelector, preview, imageAnalyzer
+                )
 
-            } catch(exc: Exception) {
+            } catch (exc: Exception) {
                 Log.e(TAG, "Use case binding failed", exc)
             }
 
@@ -167,34 +142,31 @@ class SetupCamera : AppCompatActivity() {
     companion object {
         private const val TAG = "CameraXApp"
         private const val FILENAME_FORMAT = "yyyy-MM-dd-HH-mm-ss-SSS"
-        private val REQUIRED_PERMISSIONS =
-            mutableListOf(
-                android.Manifest.permission.CAMERA,
-            ).apply {
-                if (Build.VERSION.SDK_INT <= Build.VERSION_CODES.P) {
-                    add(android.Manifest.permission.WRITE_EXTERNAL_STORAGE)
-                }
-            }.toTypedArray()
+        private val REQUIRED_PERMISSIONS = mutableListOf(
+            android.Manifest.permission.CAMERA,
+        ).apply {
+            if (Build.VERSION.SDK_INT <= Build.VERSION_CODES.P) {
+                add(android.Manifest.permission.WRITE_EXTERNAL_STORAGE)
+            }
+        }.toTypedArray()
     }
 
-    private val activityResultLauncher =
-        registerForActivityResult(
-            ActivityResultContracts.RequestMultiplePermissions())
-        { permissions ->
-            // Handle Permission granted/rejected
-            var permissionGranted = true
-            permissions.entries.forEach {
-                if (it.key in REQUIRED_PERMISSIONS && it.value == false)
-                    permissionGranted = false
-            }
-            if (!permissionGranted) {
-                Toast.makeText(baseContext,
-                    "Permission request denied",
-                    Toast.LENGTH_SHORT).show()
-            } else {
-                startCamera()
-            }
+    private val activityResultLauncher = registerForActivityResult(
+        ActivityResultContracts.RequestMultiplePermissions()
+    ) { permissions ->
+        // Handle Permission granted/rejected
+        var permissionGranted = true
+        permissions.entries.forEach {
+            if (it.key in REQUIRED_PERMISSIONS && it.value == false) permissionGranted = false
         }
+        if (!permissionGranted) {
+            Toast.makeText(
+                baseContext, "Permission request denied", Toast.LENGTH_SHORT
+            ).show()
+        } else {
+            startCamera()
+        }
+    }
 
 }
 
